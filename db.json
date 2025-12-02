@@ -1,8 +1,4 @@
 {
-    "users": [{
-        "name": "random"
-    }, {
-        "name": "random 2"
-    }],
+    "users": [],
     "tasks": []
 }
