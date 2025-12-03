@@ -1,23 +1,34 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router";
 import SignupStyle from "./Signup.module.css";
+import { UserContext } from "../context/UserContext";
+import toast from "react-hot-toast";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  console.log(SignupStyle);
+  const context = useContext(UserContext);
 
-  const handleForm = (e) => {
-    e.preventDefault();
-    console.log(username);
-    console.log(email);
-    console.log(password);
+  const handleForm = async (e) => {
+    try {
+      e.preventDefault();
 
-    setUsername("");
-    setEmail("");
-    setPassword("");
+      const res = await context.userCreate(username, email, password);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        throw new Error(res.message);
+      }
+
+      setUsername("");
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error);
+    }
   };
 
   return (

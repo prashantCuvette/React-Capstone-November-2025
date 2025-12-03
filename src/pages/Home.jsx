@@ -1,10 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { UserContext } from '../context/UserContext'
 
 const Home = () => {
+
+ 
+
+  
   return (
     <div>
-      Home Page
-      {console.log("Home Page Rendered", new Date().toLocaleString())}
+    
+      
     </div>
   )
 }
