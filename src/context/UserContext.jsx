@@ -1,12 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { axiosInstance } from "../lib/axiosInstnace";
 
+console.log("Context Ran");
+
 // Create a Context
 export const UserContext = createContext();
 
 // Create a Provider
 export const UserContextProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -23,6 +25,7 @@ export const UserContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    console.log("Effect From Context");
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);
@@ -33,12 +36,40 @@ export const UserContextProvider = ({ children }) => {
 
   // Create, Login, Logout, Chnage Details
 
-  const userLogin = async (email, password) => {
+  const userLogin = async (userEmail, userPassword) => {
     setLoading(true);
     try {
-      
-      console.log(res.data);
+      const checkExistingUser = await axiosInstance.get(`/users`);
+      const findUser = checkExistingUser.data.find(
+        (data) => data.userEmail === userEmail
+      );
+
+      if (!findUser) {
+        return {
+          success: false,
+          message: "Email Not Exists",
+        };
+      }
+
+      if (findUser.userPassword === userPassword) {
+        localStorage.setItem("user", JSON.stringify(findUser));
+        setUser(findUser);
+        return {
+          success: true,
+          message: "Login Successfull",
+        };
+      } else {
+        return {
+          success: false,
+          message: "Incorrect Password",
+        };
+      }
     } catch (error) {
+      return {
+        success: false,
+        message: "Failed To LogIn",
+        error: error,
+      };
     } finally {
       setLoading(false);
     }
@@ -47,10 +78,11 @@ export const UserContextProvider = ({ children }) => {
   const userCreate = async (userName, userEmail, userPassword) => {
     setLoading(true);
     try {
-
       const checkExistingUser = await axiosInstance.get(`/users`);
-      const findUser = checkExistingUser.find((data) => data.userEMail === userEmail);
-      if(findUser) {
+      const findUser = checkExistingUser.data.find(
+        (data) => data.userEmail === userEmail
+      );
+      if (findUser) {
         return {
           success: false,
           message: "User Alreday Exists",
@@ -62,40 +94,56 @@ export const UserContextProvider = ({ children }) => {
         userEmail,
         userPassword,
       });
-      console.log(res.data)
+      localStorage.setItem("user", JSON.stringify(res.data));
       setUser(res.data);
 
       return {
-        success: true, 
-        message: "Account Created Successfully"
-      }
-
+        success: true,
+        message: "Account Created Successfully",
+      };
     } catch (error) {
+      return {
+        success: false,
+        message: "Failed To Create Account",
+        error: error,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const userLogout = () => {
+   localStorage.removeItem("user");
+   setUser(null);
+  };
+
+  const userUpdate = async (userName, userEmail, userPassword) => {
+   setLoading(true);
+   try {
+     const checkExistingUser = await axiosInstance.get(`/users`);
+     const findUser = checkExistingUser.data.find(
+       (data) => data.userEmail === userEmail
+     );
+
+     if (!findUser) {
        return {
          success: false,
-         message: "Failed To Create Account",
-         error: error
+         message: "Email Not Exists",
        };
+     }
 
-    } finally {
-      setLoading(false);
-    }
-  };
+     // Update User Here
 
-  const userLogout = async () => {
-    try {
-    } catch (error) {
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const userUpdate = async () => {
-    try {
-    } catch (error) {
-    } finally {
-      setLoading(false);
-    }
+     
+   } catch (error) {
+     return {
+       success: false,
+       message: "Failed To Update User",
+       error: error,
+     };
+   } finally {
+     setLoading(false);
+   }
   };
 
   return (

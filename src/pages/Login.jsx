@@ -1,18 +1,32 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { UserContext } from "../context/UserContext";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleForm = (e) => {
-    e.preventDefault();
-    console.log(email);
-    console.log(password);
+  const navigate = useNavigate();
 
-  
-    setEmail("");
-    setPassword("");
+  const context = useContext(UserContext);
+
+  const handleForm = async (e) => {
+    try {
+      e.preventDefault();
+      const res = await context.userLogin(email, password);
+      if (res.success) {
+        toast.success(res.message);
+        navigate("/");
+      } else {
+        throw new Error(res.message);
+      }
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error);
+    }
   };
 
   return (

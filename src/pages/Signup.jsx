@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import SignupStyle from "./Signup.module.css";
 import { UserContext } from "../context/UserContext";
 import toast from "react-hot-toast";
@@ -9,6 +9,8 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+
   const context = useContext(UserContext);
 
   const handleForm = async (e) => {
@@ -16,8 +18,10 @@ const Signup = () => {
       e.preventDefault();
 
       const res = await context.userCreate(username, email, password);
+      console.log(res)
       if (res.success) {
         toast.success(res.message);
+        navigate("/")
       } else {
         throw new Error(res.message);
       }
