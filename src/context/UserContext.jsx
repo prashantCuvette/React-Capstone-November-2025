@@ -115,6 +115,10 @@ export const UserContextProvider = ({ children }) => {
   const userLogout = () => {
    localStorage.removeItem("user");
    setUser(null);
+   return {
+    success: true,
+    message: "User Logged Out"
+   }
   };
 
   const userUpdate = async (userName, userEmail, userPassword) => {
