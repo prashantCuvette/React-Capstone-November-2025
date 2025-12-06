@@ -18,10 +18,10 @@ const Signup = () => {
       e.preventDefault();
 
       const res = await context.userCreate(username, email, password);
-      console.log(res)
+      console.log(res);
       if (res.success) {
         toast.success(res.message);
-        navigate("/")
+        navigate("/");
       } else {
         throw new Error(res.message);
       }
@@ -36,56 +36,69 @@ const Signup = () => {
   };
 
   return (
-    <div
-      style={{
-        border: "2px solid blue",
-      }}
-    >
-      <form onSubmit={handleForm}>
-        <label className={SignupStyle.container} htmlFor="username">
-          Username:
-        </label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          required
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <br />
-        <br />
+    <div className={SignupStyle.container}>
+      <div className={SignupStyle.formWrapper}>
+        <h2 className={SignupStyle.title}>Create Account</h2>
+        <form onSubmit={handleForm} className={SignupStyle.form}>
+          <div className={SignupStyle.inputGroup}>
+            <label className={SignupStyle.label} htmlFor="username">
+              Username:
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={SignupStyle.input}
+            />
+          </div>
 
-        <label htmlFor="useremail">Email:</label>
-        <input
-          type="email"
-          id="useremail"
-          name="useremail"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <div className={SignupStyle.inputGroup}>
+            <label className={SignupStyle.label} htmlFor="useremail">
+              Email:
+            </label>
+            <input
+              type="email"
+              id="useremail"
+              name="useremail"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={SignupStyle.input}
+            />
+          </div>
 
-        <br />
-        <br />
+          <div className={SignupStyle.inputGroup}>
+            <label className={SignupStyle.label} htmlFor="password">
+              Password:
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={SignupStyle.input}
+            />
+          </div>
 
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <button type="submit" className={SignupStyle.submitBtn}>
+            Sign Up
+          </button>
+        </form>
 
-        <br />
-        <br />
-
-        <button type="submit">Sign Up</button>
-      </form>
-      <p>Alreday Have An Account. Login Here</p>
-      <Link to="/login">Login</Link>
+        <div className={SignupStyle.footer}>
+          <p className={SignupStyle.footerText}>
+            Already Have An Account? Login Here
+          </p>
+          <Link to="/login" className={SignupStyle.loginLink}>
+            Login
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

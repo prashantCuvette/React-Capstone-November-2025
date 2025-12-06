@@ -1,7 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { axiosInstance } from "../lib/axiosInstnace";
-
-console.log("Context Ran");
 
 // Create a Context
 export const UserContext = createContext();
@@ -166,8 +164,3 @@ export const UserContextProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
-
-// Create a Custom Hook (This is Optional)
-// export const useUserContext = () => {
-//   return useContext(UserContext);
-// };

@@ -108,7 +108,7 @@
   margin-bottom: 12px;
 }
 
-.loginLink {
+.signupLink {
   color: #667eea;
   text-decoration: none;
   font-weight: 600;
@@ -116,7 +116,7 @@
   transition: color 0.3s ease;
 }
 
-.loginLink:hover {
+.signupLink:hover {
   color: #764ba2;
   text-decoration: underline;
 }

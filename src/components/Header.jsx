@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router";
-import { UserContext } from "../context/UserContext"
+import HeaderStyle from "./Header.module.css";
+import { UserContext } from "../context/UserContext";
 import toast from "react-hot-toast";
 
 const Header = () => {
@@ -17,58 +18,29 @@ const Header = () => {
   }
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "35px",
-        border: "2px solid black",
-        display: "flex",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-      }}
-    >
+    <div className={HeaderStyle.header}>
       {/* app name */}
-      <div>My Notes App</div>
+      <div className={HeaderStyle.appName}>My Notes App</div>
 
       {/* nav links */}
-      <div>
-        <ul
-          style={{
-            display: "flex",
-            justifyContent: "space-evenly",
-            alignItems: "center",
-            gap: "1.5rem",
-            listStyle: "none",
-          }}
-        >
-          <Link to="/">
+      <nav className={HeaderStyle.nav}>
+        <ul className={HeaderStyle.navList}>
+          <Link to="/" className={HeaderStyle.navLink}>
             <li>Dashboard</li>
           </Link>
-          <Link to="/tasks">
+          <Link to="/tasks" className={HeaderStyle.navLink}>
             <li>Task</li>
           </Link>
-          <Link to="/notes">
+          <Link to="/notes" className={HeaderStyle.navLink}>
             <li>Notes</li>
           </Link>
         </ul>
-      </div>
+      </nav>
 
       {/* email & logout button */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-evenly",
-          alignItems: "center",
-          gap: "1rem",
-        }}
-      >
-        <p>test@gmail.gom</p>
-        <button
-          onClick={handleLogout}
-          style={{
-            cursor: "pointer",
-          }}
-        >
+      <div className={HeaderStyle.userSection}>
+        <p className={HeaderStyle.userEmail}>test@gmail.gom</p>
+        <button onClick={handleLogout} className={HeaderStyle.logoutBtn}>
           Logout
         </button>
       </div>
