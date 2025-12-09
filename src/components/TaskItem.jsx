@@ -1,26 +1,44 @@
 import { useState } from "react";
 import TaskItemStyle from "./TaskItem.module.css";
+import { TaskContext } from "../context/TaskContext";
+import { useContext } from "react";
+import UpdateTaskForm from "./UpdateTaskForm";
+import toast from "react-hot-toast";
 
 const TaskItem = ({
-  taskTitle,
-  taskDescription,
-  createdBy,
-  createdDate,
+  id,
+  name,
+  description,
+  userName,
+  createdAt,
   priority,
   color,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const maxLength = 150;
-  // const shouldShowReadMore = taskDescription.length > maxLength;
+  // const [isExpanded, setIsExpanded] = useState(true);
+  // const maxLength = 150;
+  // const shouldShowReadMore = description.length > maxLength;
+
+
+
+  const [taskForm, setTaskForm] = useState(false);
+  const context = useContext(TaskContext);
+
 
   const handleEdit = () => {
-    console.log("Edit task:", taskTitle);
-    // edit logic here
+    setTaskForm(true);
   };
 
-  const handleDelete = () => {
-    console.log("Delete task:", taskTitle);
-    // delete logic here
+  const handleDelete = async (taskId) => {
+    try {
+      const res = await context.deleteTask(taskId)
+      if(res.success) {
+        toast.success(res.message);
+      } else {
+        throw new Error(res);
+      }
+    } catch (error) {
+      toast.error(res.message);
+    }
   };
 
   const getPriorityClass = () => {
@@ -50,37 +68,48 @@ const TaskItem = ({
   };
 
   return (
-    <div className={`${TaskItemStyle.card} ${getColorClass()}`}>
-      <div className={TaskItemStyle.header}>
-        <h3 className={TaskItemStyle.title}>{taskTitle}</h3>
-        <div className={TaskItemStyle.actions}>
-          <button
-            onClick={handleEdit}
-            className={`${TaskItemStyle.actionBtn} ${TaskItemStyle.editBtn}`}
-            title="Edit"
-          >
-            ✏️
-          </button>
-          <button
-            onClick={handleDelete}
-            className={`${TaskItemStyle.actionBtn} ${TaskItemStyle.deleteBtn}`}
-            title="Delete"
-          >
-            🗑️
-          </button>
+    <>
+      {taskForm ? (
+        <UpdateTaskForm
+          setTaskForm={setTaskForm}
+          typeOfTask="Update"
+          name={name}
+          description={description}
+          priority={priority}
+          taskId={id}
+        />
+      ) : null}
+      <div className={`${TaskItemStyle.card} ${getColorClass()}`}>
+        <div className={TaskItemStyle.header}>
+          <h3 className={TaskItemStyle.title}>{name}</h3>
+          <div className={TaskItemStyle.actions}>
+            <button
+              onClick={handleEdit}
+              className={`${TaskItemStyle.actionBtn} ${TaskItemStyle.editBtn}`}
+              title="Edit"
+            >
+              ✏️
+            </button>
+            <button
+              onClick={() => handleDelete(id)}
+              className={`${TaskItemStyle.actionBtn} ${TaskItemStyle.deleteBtn}`}
+              title="Delete"
+            >
+              🗑️
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className={TaskItemStyle.content}>
-        <p>{taskDescription}</p>
-        {/* <p
+        <div className={TaskItemStyle.content}>
+          <p>{description}</p>
+          {/* <p
           className={`${TaskItemStyle.description} ${
             !isExpanded && shouldShowReadMore ? TaskItemStyle.collapsed : ""
           }`}
         >
-          {taskDescription}
+          {description}
         </p> */}
-        {/* {shouldShowReadMore && (
+          {/* {shouldShowReadMore && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className={TaskItemStyle.readMore}
@@ -88,29 +117,32 @@ const TaskItem = ({
             {isExpanded ? "Show less" : "Read more"}
           </button>
         )} */}
-      </div>
+        </div>
 
-      <div className={TaskItemStyle.footer}>
-        <div className={TaskItemStyle.metadata}>
-          <div className={TaskItemStyle.metaItem}>
-            <span className={TaskItemStyle.metaIcon}>👤</span>
-            <p
-              className={`${TaskItemStyle.metaText} ${TaskItemStyle.createdBy}`}
-            >
-              {createdBy}
-            </p>
-          </div>
-          <div className={TaskItemStyle.metaItem}>
-            <span className={TaskItemStyle.metaIcon}>📅</span>
-            <p className={TaskItemStyle.metaText}>{createdDate}</p>
+        <div className={TaskItemStyle.footer}>
+          <div className={TaskItemStyle.metadata}>
+            <div className={TaskItemStyle.metaItem}>
+              <span className={TaskItemStyle.metaIcon}>👤</span>
+              <p
+                className={`${TaskItemStyle.metaText} ${TaskItemStyle.userName}`}
+              >
+                {userName}
+              </p>
+            </div>
+            <div className={TaskItemStyle.metaItem}>
+              <span className={TaskItemStyle.metaIcon}>📅</span>
+              <p className={TaskItemStyle.metaText}>{createdAt}</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <span className={`${TaskItemStyle.priorityBadge} ${getPriorityClass()}`}>
-        {priority}
-      </span>
-    </div>
+        <span
+          className={`${TaskItemStyle.priorityBadge} ${getPriorityClass()}`}
+        >
+          {priority}
+        </span>
+      </div>
+    </>
   );
 };
 

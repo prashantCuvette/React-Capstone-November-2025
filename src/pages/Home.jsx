@@ -9,9 +9,18 @@ const Home = () => {
   const [taskForm, setTaskForm] = useState(false);
 
   const context = useContext(TaskContext);
-  console.log(context.tasks.length)
 
-  
+  const [search, setSearch] = useState("");
+
+  function filterResults(searchFilter) {
+    const filteredResults = context.tasks.filter((item) => {
+      return (
+        item.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchFilter.toLowerCase())
+      );
+    });
+    return filteredResults;
+  }
 
   return (
     <>
@@ -28,10 +37,12 @@ const Home = () => {
             <input
               placeholder="Search Task"
               className={HomeStyle.searchInput}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
 
-          {taskForm ? <TaskForm setTaskForm={setTaskForm} /> : null}
+          {taskForm ? <TaskForm setTaskForm={setTaskForm} typeOfTask="Add" /> : null}
 
           <div className={HomeStyle.taskListContainer}>
             {context.tasks.length === 0 ? (
@@ -40,16 +51,17 @@ const Home = () => {
               </div>
             ) : (
               <div className={HomeStyle.taskGrid}>
-                {context.tasks.map((task, index) => {
+                {filterResults(search).map((task, index) => {
                   return (
                     <TaskItem
                       key={task.id}
-                      taskTitle={task.taskTitle}
-                      taskDescription={task.taskDescription}
+                      id={task.id}
+                      name={task.name}
+                      description={task.description}
                       priority={task.priority}
                       color={task.color}
-                      createdBy={task.createdBy}
-                      createdDate={task.createdDate}
+                      userName={task.userName}
+                      createdAt={task.createdAt}
                     />
                   );
                 })}

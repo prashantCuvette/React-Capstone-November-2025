@@ -1,10 +1,9 @@
-import React, { use, useContext, useState } from "react";
+import {useContext, useState } from "react";
 import TaskFormStyle from "./TaskForm.module.css";
 import { TaskContext } from "../context/TaskContext";
-import { UserContext } from "../context/UserContext";
 import toast from "react-hot-toast";
 
-const TaskForm = ({ setTaskForm, typeOfTask }) => {
+const UpdateTaskForm = ({ setTaskForm, typeOfTask, name, description, priority, taskId }) => {
   const [selectedColor, setSelectedColor] = useState("red");
 
   const handleOverlayClick = (e) => {
@@ -14,37 +13,23 @@ const TaskForm = ({ setTaskForm, typeOfTask }) => {
   };
 
   const taskContext = useContext(TaskContext);
-  const userContext = useContext(UserContext);
 
   const [taskData, setTaskdata] = useState({
-    name: "",
-    description: "",
-    priority: "",
+    name: name,
+    description: description,
+    priority: priority,
   });
 
   const handleFormSubmit = async (e) => {
     try {
       e.preventDefault();
-      const newTaskData = {
-        ...taskData,
-        color: selectedColor,
-        userId: userContext.user.id,
-        userName: userContext.user.userName,
-        createdAt: new Date().toISOString(),
-      };
-
-      const res = await taskContext.createTask(newTaskData);
+      const res = await taskContext.updateTask(taskData, taskId);
       if (res.success) {
         toast.success(res.message);
       } else {
         throw new Error(res.message);
       }
       setSelectedColor("red");
-      setTaskdata({
-        name: "",
-        description: "",
-        priority: "",
-      });
       setTaskForm(false);
     } catch (error) {
       toast.error(error.message);
@@ -145,4 +130,4 @@ const TaskForm = ({ setTaskForm, typeOfTask }) => {
   );
 };
 
-export default TaskForm;
+export default UpdateTaskForm;

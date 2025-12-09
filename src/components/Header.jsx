@@ -39,7 +39,7 @@ const Header = () => {
 
       {/* email & logout button */}
       <div className={HeaderStyle.userSection}>
-        <p className={HeaderStyle.userEmail}>test@gmail.gom</p>
+        <p className={HeaderStyle.userEmail}>{context.user?.userEmail}</p>
         <button onClick={handleLogout} className={HeaderStyle.logoutBtn}>
           Logout
         </button>

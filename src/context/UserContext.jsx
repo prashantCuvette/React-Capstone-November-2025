@@ -112,6 +112,7 @@ export const UserContextProvider = ({ children }) => {
 
   const userLogout = () => {
    localStorage.removeItem("user");
+   localStorage.removeItem("tasks");
    setUser(null);
    return {
     success: true,

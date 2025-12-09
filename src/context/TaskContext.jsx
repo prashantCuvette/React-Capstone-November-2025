@@ -6,25 +6,25 @@ export const TaskContext = createContext();
 
 // Create a Provider
 export const TaskContextProvider = ({ children }) => {
-  const [tasks, setTasks] = useState(JSON.parse(localStorage.getItem("tasks")));
+  const [tasks, setTasks] = useState(
+    JSON.parse(localStorage.getItem("tasks")) || []
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const storedTasks = JSON.parse(localStorage.getItem("tasks"));
-    if (storedTasks) {
-      setTasks(storedTasks);
-    } else {
-      getTasks();
-    }
-  }, []);
+    getTasks();
+  }, [tasks]);
 
   const createTask = async (taskData) => {
     setLoading(true);
     try {
       const res = await axiosInstance.post("/tasks", taskData);
       setTasks((prevTasks) => [...prevTasks, res.data]);
-      localStorage.setItem("tasks", JSON.stringify([...tasks, res.data]));
+
+      const storedItems = JSON.parse(localStorage.getItem("tasks"));
+      const updatedData = [...storedItems, res.data];
+      localStorage.setItem("tasks", JSON.stringify(updatedData));
 
       return {
         success: true,
@@ -40,12 +40,16 @@ export const TaskContextProvider = ({ children }) => {
     }
   };
 
-  const getTasks = async (taskData) => {
+  const getTasks = async () => {
     setLoading(true);
     try {
+      const storedData = JSON.parse(localStorage.getItem("tasks"));
+      if(storedData) {
+        setTasks(res.data);
+        return;
+      }
       const res = await axiosInstance.get("/tasks");
       setTasks(res.data);
-      localStorage.setItem("tasks", JSON.stringify(res.data));
 
       return {
         success: true,
@@ -61,36 +65,26 @@ export const TaskContextProvider = ({ children }) => {
     }
   };
 
-  // ToDO
   const updateTask = async (taskData, taskId) => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get("/tasks");
-      const item = res.data.find((task) => task.id === taskId);
-      if (!item) {
-        return {
-          success: false,
-          message: "Task Not Found",
-        };
-      }
-
-      const updatedTask = { ...item, ...taskData };
-      await axiosInstance.put("/tasks", { ...res.data, updatedTask });
-
-      const updatedTasks = res.data.map((task) =>
-        task.id === taskId ? updatedTask : task
-      );
-      setTasks(updatedTasks);
-      localStorage.setItem(
-        "tasks",
-        JSON.stringify({ ...res.data, updatedTask })
-      );
+      const res = await axiosInstance.patch(`/tasks/${taskId}`, taskData);
+      console.log(res);
+       const storedItems = JSON.parse(localStorage.getItem("tasks"));
+       const updatedData = storedItems.map((item) => item.id === taskId ? res.data : item);
+       setTasks(updatedData);
+       localStorage.setItem("tasks", JSON.stringify(updatedData));
 
       return {
         success: true,
         message: "Task Updated Successfully",
       };
     } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        message: "Failed To Update Task",
+      };
     } finally {
       setLoading(false);
     }
@@ -99,25 +93,24 @@ export const TaskContextProvider = ({ children }) => {
   const deleteTask = async (taskId) => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get("/tasks");
-      const item = res.data.find((task) => task.id === taskId);
-      if (!item) {
-        return {
-          success: false,
-          message: "Task Not Found",
-        };
-      }
+      const res = await axiosInstance.delete(`/tasks/${taskId}`);
+      console.log(res.data);
 
-      const deleteTaskRes = await axiosInstance.delete(`/tasks/${taskId}`);
-       return {
-         success: true,
-         message: "Task Deleted Successfully",
-       };
+      const storedItems = JSON.parse(localStorage.getItem("tasks"));
+      const updatedData = storedItems.filter((item) => item.id !== taskId);
+      setTasks(updatedData);
+      localStorage.setItem("tasks", JSON.stringify(updatedData));
+
+      return {
+        success: true,
+        message: "Task Deleted Successfully",
+      };
     } catch (error) {
-        return {
-          success: false,
-          message: "Failed to Delete Task",
-        };
+      console.log(error);
+      return {
+        success: false,
+        message: "Failed To Delete Task",
+      };
     } finally {
       setLoading(false);
     }
